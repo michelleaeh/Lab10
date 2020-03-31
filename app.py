@@ -1,72 +1,108 @@
-from flask import Flask, request, render_template
-import os
-import pickle
+<!DOCTYPE html>
+<html>
 
-print(os.getcwd())
-path = os.getcwd()
+<style>
+input[type=number], select {
+  width: 100%;
+  padding: 12px 20px;
+  margin: 8px 0;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 
-with open('Models/RF_model.pkl', 'rb') as f:
-    randomforest = pickle.load(f)
+}
 
-with open('Models/DT_model.pkl', 'rb') as f:
-    decisiontree = pickle.load(f)
+input[type=submit] {
+  width: 100%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
 
-with open('Models/SVM_model.pkl', 'rb') as f:
-    svm_model = pickle.load(f)
+input[type=submit]:hover {
+  background-color: #45a049;
+}
 
-
-def get_predictions(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal, req_model):
-    mylist = [age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]
-    mylist = [float(i) for i in mylist]
-    vals = [mylist]
-
-    if req_model == 'DecisionTree':
-        #print(req_model)
-        return decisiontree.predict(vals)[0]
-
-    elif req_model == 'RandomForest':
-        #print(req_model)
-        return randomforest.predict(vals)[0]
-
-    elif req_model == 'SVM':
-        #print(req_model)
-        return svm_model.predict(vals)[0]
-    else:
-        return "Cannot Predict"
-
-
-app = Flask(__name__)
-
-@app.route('/')
-def my_form():
-    return render_template('home.html')
-
-@app.route('/', methods=['POST', 'GET'])
-def my_form_post():
-    age = request.form['age']
-    sex = request.form['sex']
-    cp = request.form['cp']
-    trestbps = request.form['trestbps']
-    chol = request.form['chol']
-    fbs = request.form['fbs']
-    restecg = request.form['restecg']
-    thalach = request.form['thalach']
-    exang = request.form['exang']
-    oldpeak = request.form['oldpeak']
-    slope = request.form['slope']
-    ca = request.form['ca']
-    thal = request.form['thal']
-    req_model = request.form['req_model']
-
-    target = get_predictions(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal, req_model)
-
-    if target==1:
-        sale_making = 'Customer is likely to buy the insurance'
-    else:
-        sale_making = 'Customer is unlikely to buy the insurance'
-
-    return render_template('home.html', target = target, sale_making = sale_making)
+div {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+</style>
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
+<body>
+<center><h1><font color="white">Insurance Prediction</h1></center>
+<h2>     </h2>
+
+<div align="center" style="margin-right: 30%;
+    margin-left: 30%;">
+
+  <form method="POST">
+  <form action="/action_page.php">
+    <label for="age"></label>
+    <input type="number" id="age" name="age" placeholder="Age (between 29 and 77)" min="29" max="77" step="1" required size="35">
+
+    <label for="sex"></label>
+    <input type="number" id="sex" name="sex" placeholder="Sex (between 0 or 1)" min="0" max="1" step="1" required>
+
+    <label for="cp"></label>
+    <input type="number" id="cp" name="cp" placeholder="CP (between 0 and 3)" min="0" max="3" step="1" required>
+
+    <label for="trestbps"></label>
+    <input type="number" id="trestbps" name="trestbps" placeholder="trestbps (between 94 and 200)" min="94" max="200"  step="1" required>
+
+    <label for="chol"></label>
+    <input type="number" id="chol" name="chol" placeholder="chol (between 126 and 564)" min="126" max="564" step="1" required>
+
+    <label for="fbs"></label>
+    <input type="number" id="fbs" name="fbs" placeholder="fbs (between 0 and 1)" min="0" max="1" step="1" required>
+
+    <label for="restecg"></label>
+    <input type="number" id="restecg" name="restecg" placeholder="restecg (between 0 and 2)" min="0" max="2" step="1" required>
+
+    <label for="thalach"></label>
+    <input type="number" id="thalach" name="thalach" placeholder="thalach (between 71 and 202)" min="71" max="202" step="1" required>
+
+    <label for="exang"></label>
+    <input type="number" id="exang" name="exang" placeholder="exang (between 0 and 1)" min="0" max="1" step="1" required>
+
+    <label for="oldpeak"></label>
+    <input type="number" id="oldpeak" name="oldpeak" placeholder="oldpeak (between 0 and 6.2)" min="0" max="6.2" step="0.1" required>
+
+    <label for="slope"></label>
+    <input type="number" id="slope" name="slope" placeholder="slope (between 0 and 2)" min="0" max="2" step="1" required>
+
+    <label for="ca"></label>
+    <input type="number" id="ca" name="ca" placeholder="ca (between 0 and 4)" min="0" max="4" step="1" required>
+
+    <label for="thal"></label>
+    <input type="number" id="thal" name="thal" placeholder="thal (between 0 and 3)" min="0" max="3" step="1" required>
+
+    <select name="req_model">
+    <option value="DecisionTree">Decision Tree</option>
+    <option value="RandomForest">Random Forest</option>
+    <option value="SVM">SVM</option>
+  </select>
+
+
+    <input type="submit" value="Predict">
+  </form>
+</form>
+
+<form method="GET">
+    <center><h2><font color="Black"> Heart Disease prediction is {{ target}}</h2></center>
+    <center><h2><font color="Black"> {{ sale_making}}</h2></center>
+</form>
+
+
+</div>
+
+
+</body>
+</html>
